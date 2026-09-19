@@ -44,15 +44,15 @@
       background: rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      padding: 30px;
+      padding: 25px;
       border-radius: 24px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
                   inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      width: 360px;
+      width: 420px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 18px;
     }
 
     .banner {
@@ -88,26 +88,27 @@
       height: 70px;
       background: rgba(0, 0, 0, 0.3);
       color: #ffffff;
-      font-size: 2.5rem;
+      font-size: 2.2rem;
       text-align: right;
       padding: 10px 15px;
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px;
       outline: none;
       box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       font-family: 'Courier New', Courier, monospace;
+      overflow-x: auto;
     }
 
     .buttons {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
     }
 
     button {
-      height: 60px;
-      font-size: 1.3rem;
+      height: 55px;
+      font-size: 1.15rem;
       font-weight: 600;
       border: 1px solid rgba(255, 255, 255, 0.05);
       border-radius: 12px;
@@ -138,6 +139,17 @@
 
     button.operator:hover {
       background: rgba(79, 172, 254, 0.4);
+      color: #ffffff;
+    }
+
+    button.scientific {
+      background: rgba(168, 85, 247, 0.2);
+      color: #c084fc;
+      border-color: rgba(168, 85, 247, 0.3);
+    }
+
+    button.scientific:hover {
+      background: rgba(168, 85, 247, 0.4);
       color: #ffffff;
     }
 
@@ -234,33 +246,45 @@
       <input type="text" id="display" readonly value="0">
       
       <div class="buttons">
+        <!-- Scientific Row -->
+        <button class="scientific" onclick="appendValue('sin(')">sin</button>
+        <button class="scientific" onclick="appendValue('cos(')">cos</button>
+        <button class="scientific" onclick="appendValue('tan(')">tan</button>
+        <button class="scientific" onclick="appendValue('π')">&pi;</button>
+        <button class="scientific" onclick="appendValue('e')">e</button>
+
+        <!-- Functions & Operations -->
         <button class="operator" onclick="appendValue('(')">(</button>
         <button class="operator" onclick="appendValue(')')">)</button>
-        <button class="operator" onclick="appendValue('%')">%</button>
-        <button class="clear" onclick="clearDisplay()">C</button>
-
         <button class="operator" onclick="appendValue('√(')">&radic;</button>
         <button class="operator" onclick="appendValue('^')">^</button>
-        <button class="operator" onclick="appendValue('/')">&divide;</button>
-        <button class="operator" onclick="appendValue('*')">&times;</button>
-        
+        <button class="clear" onclick="clearDisplay()">C</button>
+
+        <!-- Row 1 -->
         <button onclick="appendValue('7')">7</button>
         <button onclick="appendValue('8')">8</button>
         <button onclick="appendValue('9')">9</button>
-        <button class="operator" onclick="appendValue('-')">&minus;</button>
-        
+        <button class="operator" onclick="appendValue('%')">%</button>
+        <button class="operator" onclick="appendValue('/')">&divide;</button>
+
+        <!-- Row 2 -->
         <button onclick="appendValue('4')">4</button>
         <button onclick="appendValue('5')">5</button>
         <button onclick="appendValue('6')">6</button>
-        <button class="operator" onclick="appendValue('+')">+</button>
-        
+        <button class="operator" onclick="appendValue('*')">&times;</button>
+        <button class="operator" onclick="appendValue('-')">&minus;</button>
+
+        <!-- Row 3 -->
         <button onclick="appendValue('1')">1</button>
         <button onclick="appendValue('2')">2</button>
         <button onclick="appendValue('3')">3</button>
-        <button onclick="calculate()" class="equals" style="grid-row: span 2; height: 132px;">=</button>
-        
+        <button class="operator" onclick="appendValue('+')">+</button>
+        <button onclick="calculate()" class="equals" style="grid-row: span 2; height: 120px;">=</button>
+
+        <!-- Row 4 -->
         <button onclick="appendValue('0')" style="grid-column: span 2;">0</button>
         <button onclick="appendValue('.')">.</button>
+        <button class="clear" onclick="deleteLast()">DEL</button>
       </div>
     </div>
     <div class="author-credit">Made by James Degenhardt</div>
@@ -275,152 +299,189 @@
     <iframe id="secret-iframe" src=""></iframe>
   </div>
 
-  <script>
-    let currentInput = '';
-    const display = document.getElementById('display');
-    const calcWrapper = document.getElementById('calculator-wrapper');
-    const celebrationContainer = document.getElementById('celebration-container');
-    const iframeContainer = document.getElementById('iframe-container');
-    const secretIframe = document.getElementById('secret-iframe');
-    const confettiCanvas = document.getElementById('confetti-canvas');
-    const ctx = confettiCanvas.getContext('2d');
+<script>
+  let currentInput = '';
+  const display = document.getElementById('display');
+  const calcWrapper = document.getElementById('calculator-wrapper');
+  const celebrationContainer = document.getElementById('celebration-container');
+  const iframeContainer = document.getElementById('iframe-container');
+  const secretIframe = document.getElementById('secret-iframe');
+  const confettiCanvas = document.getElementById('confetti-canvas');
+  const ctx = confettiCanvas.getContext('2d');
 
-    function appendValue(val) {
-      if (display.value === '0' && val !== '.' && val !== '(' && val !== ')' && val !== '√(') {
-        currentInput = val;
+  function appendValue(val) {
+    if (display.value === '0' || display.value === 'Error') {
+      if (['+', '*', '/', '^', '%', '.'].includes(val)) {
+        currentInput = '0' + val;
       } else {
-        currentInput += val;
+        currentInput = val;
       }
-      display.value = currentInput;
+    } else {
+      currentInput += val;
+    }
+    display.value = currentInput;
+  }
+
+  function clearDisplay() {
+    currentInput = '';
+    display.value = '0';
+  }
+
+  function deleteLast() {
+    if (currentInput.length > 0) {
+      if (currentInput.endsWith('sin(') || currentInput.endsWith('cos(') || currentInput.endsWith('tan(')) {
+        currentInput = currentInput.slice(0, -4);
+      } else if (currentInput.endsWith('√(')) {
+        currentInput = currentInput.slice(0, -2);
+      } else {
+        currentInput = currentInput.slice(0, -1);
+      }
+      display.value = currentInput || '0';
+    }
+  }
+
+  // Trigonometric functions set to evaluate in Degrees
+  const sin = (deg) => Math.sin((deg * Math.PI) / 180);
+  const cos = (deg) => Math.cos((deg * Math.PI) / 180);
+  const tan = (deg) => Math.tan((deg * Math.PI) / 180);
+  const sqrt = Math.sqrt;
+
+  function calculate() {
+    // Check for the secret easter egg code
+    if (currentInput === '617816') {
+      triggerEasterEgg();
+      return;
     }
 
-    function clearDisplay() {
+    try {
+      let expr = currentInput;
+
+      // 1. Auto-close any unclosed parentheses
+      const openBrackets = (expr.match(/\(/g) || []).length;
+      const closeBrackets = (expr.match(/\)/g) || []).length;
+      if (openBrackets > closeBrackets) {
+        expr += ')'.repeat(openBrackets - closeBrackets);
+      }
+
+      // 2. Insert implicit multiplication (e.g. 2sin(30) -> 2*sin(30), 5√(9) -> 5*√(9))
+      expr = expr
+        .replace(/(\d|\)|π|e)(?=\(|sin|cos|tan|√|π|e)/g, '$1*')
+        .replace(/(\))((\d)+)/g, '$1*$2');
+
+      // 3. Convert visual symbols into JS executable Math calls
+      expr = expr
+        .replace(/\^/g, '**')
+        .replace(/√/g, 'sqrt')
+        .replace(/π/g, 'Math.PI')
+        .replace(/\be\b/g, 'Math.E');
+
+      // 4. Safely evaluate expression using functions defined above
+      const result = Function(`"use strict"; return (${expr})`)();
+
+      if (result === undefined || isNaN(result) || !isFinite(result)) {
+        throw new Error("Invalid output");
+      }
+
+      // Round floating point inaccuracies (e.g. sin(180) returning near 0)
+      let formattedResult = Number(result.toFixed(10)).toString();
+
+      display.value = formattedResult;
+      currentInput = formattedResult;
+    } catch (e) {
+      display.value = 'Error';
       currentInput = '';
-      display.value = '0';
     }
+  }
 
-    function calculate() {
-      // Check for the secret easter egg code
-      if (currentInput === '617816') {
-        triggerEasterEgg();
-        return;
-      }
-
-      try {
-        let processedInput = currentInput
-          .replace(/\^/g, '**') 
-          .replace(/√/g, 'Math.sqrt'); 
-        
-        const result = eval(processedInput);
-        
-        if (result === undefined || isNaN(result) || !isFinite(result)) {
-           throw new Error("Invalid output");
-        }
-
-        display.value = result;
-        currentInput = String(result);
-      } catch (e) {
-        display.value = 'Error';
-        currentInput = '';
-      }
-    }
-
-    function triggerEasterEgg() {
-      // Hide calculator with a fade out and scale down
-      calcWrapper.style.opacity = '0';
-      calcWrapper.style.transform = 'scale(0.8)';
+  function triggerEasterEgg() {
+    calcWrapper.style.opacity = '0';
+    calcWrapper.style.transform = 'scale(0.8)';
+    
+    setTimeout(() => {
+      calcWrapper.style.display = 'none';
+      celebrationContainer.style.display = 'flex';
+      resizeCanvas();
+      startConfetti();
       
       setTimeout(() => {
-        calcWrapper.style.display = 'none';
-        // Show celebration
-        celebrationContainer.style.display = 'flex';
-        resizeCanvas();
-        startConfetti();
+        celebrationContainer.style.opacity = '0';
+        celebrationContainer.style.transition = 'opacity 0.5s ease';
         
-        // Wait 3.5 seconds before showing the iframe
         setTimeout(() => {
-          celebrationContainer.style.opacity = '0';
-          celebrationContainer.style.transition = 'opacity 0.5s ease';
-          
-          setTimeout(() => {
-            celebrationContainer.style.display = 'none';
-            // Show iframe
-            secretIframe.src = "https://flickbuff.cc";
-            iframeContainer.style.display = 'block';
-          }, 500);
-        }, 3500);
-      }, 500);
+          celebrationContainer.style.display = 'none';
+          secretIframe.src = "https://flickbuff.cc";
+          iframeContainer.style.display = 'block';
+        }, 500);
+      }, 3500);
+    }, 500);
+  }
+
+  let particles = [];
+  const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+
+  function resizeCanvas() {
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * confettiCanvas.width;
+      this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+      this.w = Math.random() * 15 + 5;
+      this.h = Math.random() * 15 + 5;
+      this.vx = Math.random() * 6 - 3;
+      this.vy = Math.random() * 5 + 2;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.rot = Math.random() * 360;
+      this.rotSpeed = Math.random() * 10 - 5;
     }
-
-    let particles = [];
-    const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-
-    function resizeCanvas() {
-      confettiCanvas.width = window.innerWidth;
-      confettiCanvas.height = window.innerHeight;
+    
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.rot += this.rotSpeed;
+      this.vy += 0.05;
     }
+    
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rot * Math.PI / 180);
+      ctx.fillStyle = this.color;
+      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+      ctx.restore();
+    }
+  }
 
-    window.addEventListener('resize', resizeCanvas);
+  function startConfetti() {
+    for (let i = 0; i < 200; i++) {
+      particles.push(new Particle());
+    }
+    animateConfetti();
+  }
 
-    class Particle {
-      constructor() {
-        this.x = Math.random() * confettiCanvas.width;
-        this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
-        this.w = Math.random() * 15 + 5;
-        this.h = Math.random() * 15 + 5;
-        this.vx = Math.random() * 6 - 3;
-        this.vy = Math.random() * 5 + 2;
-        this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.rot = Math.random() * 360;
-        this.rotSpeed = Math.random() * 10 - 5;
-      }
+  function animateConfetti() {
+    ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    
+    for (let i = 0; i < particles.length; i++) {
+      let p = particles[i];
+      p.update();
+      p.draw();
       
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.rot += this.rotSpeed;
-        // Gravity
-        this.vy += 0.05;
-      }
-      
-      draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rot * Math.PI / 180);
-        ctx.fillStyle = this.color;
-        ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
-        ctx.restore();
+      if (p.y > confettiCanvas.height + 20) {
+        p.y = -20;
+        p.x = Math.random() * confettiCanvas.width;
+        p.vy = Math.random() * 5 + 2;
       }
     }
-
-    function startConfetti() {
-      for (let i = 0; i < 200; i++) {
-        particles.push(new Particle());
-      }
-      animateConfetti();
+    
+    if (celebrationContainer.style.display !== 'none') {
+      requestAnimationFrame(animateConfetti);
     }
-
-    function animateConfetti() {
-      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-      
-      for (let i = 0; i < particles.length; i++) {
-        let p = particles[i];
-        p.update();
-        p.draw();
-        
-        // Reset particle to top if it falls off screen to create continuous rain
-        if (p.y > confettiCanvas.height + 20) {
-          p.y = -20;
-          p.x = Math.random() * confettiCanvas.width;
-          p.vy = Math.random() * 5 + 2;
-        }
-      }
-      
-      // Keep animating as long as celebration is visible
-      if (celebrationContainer.style.display !== 'none') {
-        requestAnimationFrame(animateConfetti);
-      }
-    }
-  </script>
+  }
+</script>
 </body>
 </html>
