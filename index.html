@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BCcalculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* Animated dark gradient background */
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #172554, #4c1d95);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      overflow: hidden;
+      color: white;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #calculator-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    #calculator-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 30px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .banner {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+      /* Glowing gradient text */
+      background: linear-gradient(to right, #00f2fe, #4facfe, #00f2fe);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 3s linear infinite;
+      text-shadow: 0 0 20px rgba(79, 172, 254, 0.4);
+    }
+
+    @keyframes shine {
+      to { background-position: 200% center; }
+    }
+
+    .author-credit {
+      text-align: center;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 15px;
+      letter-spacing: 0.5px;
+      font-weight: 300;
+    }
+
+    #display {
+      width: 100%;
+      height: 70px;
+      background: rgba(0, 0, 0, 0.3);
+      color: #ffffff;
+      font-size: 2.5rem;
+      text-align: right;
+      padding: 10px 15px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      outline: none;
+      box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.3);
+      letter-spacing: 2px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    button {
+      height: 60px;
+      font-size: 1.3rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    button.operator {
+      background: rgba(79, 172, 254, 0.2);
+      color: #4facfe;
+      border-color: rgba(79, 172, 254, 0.3);
+    }
+
+    button.operator:hover {
+      background: rgba(79, 172, 254, 0.4);
+      color: #ffffff;
+    }
+
+    button.equals {
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    }
+
+    button.equals:hover {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+    }
+
+    button.clear {
+      background: rgba(255, 87, 87, 0.2);
+      color: #ff5757;
+      border-color: rgba(255, 87, 87, 0.3);
+    }
+
+    button.clear:hover {
+      background: rgba(255, 87, 87, 0.4);
+      color: #ffffff;
+    }
+
+    #celebration-container {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 20;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .celebration-text {
+      font-size: 4rem;
+      font-weight: 900;
+      text-align: center;
+      background: linear-gradient(to right, #ffdf00, #ff8c00, #ff0080, #8a2be2, #00ffff);
+      background-size: 400% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 4s linear infinite, popIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      text-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+      padding: 20px;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    #confetti-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 21;
+    }
+
+    #iframe-container {
+      display: none;
+      width: 100%;
+      height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 30;
+      background: #000;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="calculator-wrapper">
+    <div id="calculator-container">
+      <div class="banner">BCcalculator</div>
+      <input type="text" id="display" readonly value="0">
+      
+      <div class="buttons">
+        <button class="operator" onclick="appendValue('(')">(</button>
+        <button class="operator" onclick="appendValue(')')">)</button>
+        <button class="operator" onclick="appendValue('%')">%</button>
+        <button class="clear" onclick="clearDisplay()">C</button>
+
+        <button class="operator" onclick="appendValue('√(')">&radic;</button>
+        <button class="operator" onclick="appendValue('^')">^</button>
+        <button class="operator" onclick="appendValue('/')">&divide;</button>
+        <button class="operator" onclick="appendValue('*')">&times;</button>
+        
+        <button onclick="appendValue('7')">7</button>
+        <button onclick="appendValue('8')">8</button>
+        <button onclick="appendValue('9')">9</button>
+        <button class="operator" onclick="appendValue('-')">&minus;</button>
+        
+        <button onclick="appendValue('4')">4</button>
+        <button onclick="appendValue('5')">5</button>
+        <button onclick="appendValue('6')">6</button>
+        <button class="operator" onclick="appendValue('+')">+</button>
+        
+        <button onclick="appendValue('1')">1</button>
+        <button onclick="appendValue('2')">2</button>
+        <button onclick="appendValue('3')">3</button>
+        <button onclick="calculate()" class="equals" style="grid-row: span 2; height: 132px;">=</button>
+        
+        <button onclick="appendValue('0')" style="grid-column: span 2;">0</button>
+        <button onclick="appendValue('.')">.</button>
+      </div>
+    </div>
+    <div class="author-credit">Made by James Degenhardt</div>
+  </div>
+
+  <div id="celebration-container">
+    <canvas id="confetti-canvas"></canvas>
+    <div class="celebration-text">You found the secret code!</div>
+  </div>
+
+  <div id="iframe-container">
+    <iframe id="secret-iframe" src=""></iframe>
+  </div>
+
+  <script>
+    let currentInput = '';
+    const display = document.getElementById('display');
+    const calcWrapper = document.getElementById('calculator-wrapper');
+    const celebrationContainer = document.getElementById('celebration-container');
+    const iframeContainer = document.getElementById('iframe-container');
+    const secretIframe = document.getElementById('secret-iframe');
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const ctx = confettiCanvas.getContext('2d');
+
+    function appendValue(val) {
+      if (display.value === '0' && val !== '.' && val !== '(' && val !== ')' && val !== '√(') {
+        currentInput = val;
+      } else {
+        currentInput += val;
+      }
+      display.value = currentInput;
+    }
+
+    function clearDisplay() {
+      currentInput = '';
+      display.value = '0';
+    }
+
+    function calculate() {
+      // Check for the secret easter egg code
+      if (currentInput === '617816') {
+        triggerEasterEgg();
+        return;
+      }
+
+      try {
+        let processedInput = currentInput
+          .replace(/\^/g, '**') 
+          .replace(/√/g, 'Math.sqrt'); 
+        
+        const result = eval(processedInput);
+        
+        if (result === undefined || isNaN(result) || !isFinite(result)) {
+           throw new Error("Invalid output");
+        }
+
+        display.value = result;
+        currentInput = String(result);
+      } catch (e) {
+        display.value = 'Error';
+        currentInput = '';
+      }
+    }
+
+    function triggerEasterEgg() {
+      // Hide calculator with a fade out and scale down
+      calcWrapper.style.opacity = '0';
+      calcWrapper.style.transform = 'scale(0.8)';
+      
+      setTimeout(() => {
+        calcWrapper.style.display = 'none';
+        // Show celebration
+        celebrationContainer.style.display = 'flex';
+        resizeCanvas();
+        startConfetti();
+        
+        // Wait 3.5 seconds before showing the iframe
+        setTimeout(() => {
+          celebrationContainer.style.opacity = '0';
+          celebrationContainer.style.transition = 'opacity 0.5s ease';
+          
+          setTimeout(() => {
+            celebrationContainer.style.display = 'none';
+            // Show iframe
+            secretIframe.src = "https://flickbuff.cc";
+            iframeContainer.style.display = 'block';
+          }, 500);
+        }, 3500);
+      }, 500);
+    }
+
+    let particles = [];
+    const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
+
+    function resizeCanvas() {
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * confettiCanvas.width;
+        this.y = Math.random() * confettiCanvas.height - confettiCanvas.height;
+        this.w = Math.random() * 15 + 5;
+        this.h = Math.random() * 15 + 5;
+        this.vx = Math.random() * 6 - 3;
+        this.vy = Math.random() * 5 + 2;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.rot = Math.random() * 360;
+        this.rotSpeed = Math.random() * 10 - 5;
+      }
+      
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.rotSpeed;
+        // Gravity
+        this.vy += 0.05;
+      }
+      
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rot * Math.PI / 180);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
+        ctx.restore();
+      }
+    }
+
+    function startConfetti() {
+      for (let i = 0; i < 200; i++) {
+        particles.push(new Particle());
+      }
+      animateConfetti();
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      
+      for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+        p.update();
+        p.draw();
+        
+        // Reset particle to top if it falls off screen to create continuous rain
+        if (p.y > confettiCanvas.height + 20) {
+          p.y = -20;
+          p.x = Math.random() * confettiCanvas.width;
+          p.vy = Math.random() * 5 + 2;
+        }
+      }
+      
+      // Keep animating as long as celebration is visible
+      if (celebrationContainer.style.display !== 'none') {
+        requestAnimationFrame(animateConfetti);
+      }
+    }
+  </script>
+</body>
+</html>
