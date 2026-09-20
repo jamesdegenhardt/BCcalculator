@@ -185,30 +185,43 @@
     }
 
     #links-menu-container {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      padding: 35px 25px;
-      border-radius: 24px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
-                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      width: 420px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 35px 25px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+              inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  width: min(90vw, 840px); /* Widens container to allow multiple columns */
+  max-height: 85vh;        /* Keeps container within vertical screen bounds */
+  overflow-y: auto;        /* Adds a scrollbar if vertical space is still constrained */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Automatically grids buttons into rows */
+  gap: 15px;
+}
 
-    .link-button {
-      height: 65px;
-      font-size: 1.3rem;
-      letter-spacing: 1px;
-      background: rgba(255, 255, 255, 0.08);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+/* Forces the title banner to take up the full row at the top */
+#links-menu-container .banner {
+  grid-column: 1 / -1;     
+}
 
+.link-button {
+  height: 65px;
+  font-size: 1rem;          /* Adjusted font size to fit multi-column layout */
+  text-align: center;
+  padding: 10px;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+}
+
+.link-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
     .link-button:hover {
       background: rgba(255, 255, 255, 0.2);
     }
