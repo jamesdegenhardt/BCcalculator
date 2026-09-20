@@ -176,6 +176,48 @@
       color: #ffffff;
     }
 
+    #links-menu-wrapper {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    #links-menu-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 35px 25px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      width: 420px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .link-button {
+      height: 65px;
+      font-size: 1.3rem;
+      letter-spacing: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .link-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
     #celebration-container {
       display: none;
       position: absolute;
@@ -236,6 +278,29 @@
       height: 100%;
       border: 0;
     }
+
+    #back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 40;
+      height: 50px;
+      padding: 0 25px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 1rem;
+      border-radius: 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #back-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
   </style>
 </head>
 <body>
@@ -290,12 +355,28 @@
     <div class="author-credit">Made by James Degenhardt</div>
   </div>
 
+  <div id="links-menu-wrapper">
+    <div id="links-menu-container">
+      <div class="banner" style="font-size: 2.8rem; margin-bottom: 10px;">Secret Hub</div>
+      
+      <!-- User configurable links -->
+      <button class="link-button" onclick="openIframe('https://flickbuff.cc')">BCmovie</button>
+      <button class="link-button" onclick="openIframe('https://veck.io')">Veck.io</button>
+      <button class="link-button" onclick="openIframe('fallzone.io')">Fortnite</button>
+      
+    </div>
+  </div>
+
   <div id="celebration-container">
     <canvas id="confetti-canvas"></canvas>
     <div class="celebration-text">You found the secret code!</div>
   </div>
 
   <div id="iframe-container">
+    <button id="back-btn" onclick="closeIframe()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to Hub
+    </button>
     <iframe id="secret-iframe" src=""></iframe>
   </div>
 
@@ -303,9 +384,13 @@
   let currentInput = '';
   const display = document.getElementById('display');
   const calcWrapper = document.getElementById('calculator-wrapper');
-  const celebrationContainer = document.getElementById('celebration-container');
+  
+  // New elements for Links Menu & Iframe
+  const linksMenuWrapper = document.getElementById('links-menu-wrapper');
   const iframeContainer = document.getElementById('iframe-container');
   const secretIframe = document.getElementById('secret-iframe');
+  
+  const celebrationContainer = document.getElementById('celebration-container');
   const confettiCanvas = document.getElementById('confetti-canvas');
   const ctx = confettiCanvas.getContext('2d');
 
@@ -409,11 +494,23 @@
         
         setTimeout(() => {
           celebrationContainer.style.display = 'none';
-          secretIframe.src = "https://flickbuff.cc";
-          iframeContainer.style.display = 'block';
+          // Show the Links Menu instead of directly loading the iframe
+          linksMenuWrapper.style.display = 'flex';
         }, 500);
       }, 3500);
     }, 500);
+  }
+
+  function openIframe(url) {
+    linksMenuWrapper.style.display = 'none';
+    secretIframe.src = url;
+    iframeContainer.style.display = 'block';
+  }
+
+  function closeIframe() {
+    iframeContainer.style.display = 'none';
+    secretIframe.src = ''; // Clears the iframe source to stop media from playing
+    linksMenuWrapper.style.display = 'flex';
   }
 
   let particles = [];
