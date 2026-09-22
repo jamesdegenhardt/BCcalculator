@@ -55,6 +55,63 @@
       gap: 18px;
     }
 
+    <!-- Academic Documentation Cover-Up Section -->
+<div id="theory-container" style="
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 25px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  width: 420px;
+  margin-top: 20px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+">
+  <h3 style="color: #4facfe; margin-bottom: 10px; font-size: 1.1rem; text-align: center; font-weight: 700;">
+    Complex Analysis & Transcendental Calculus
+  </h3>
+
+  <p style="margin-bottom: 12px;">
+    The complex number field $\mathbb{C}$ extends the real domain $\mathbb{R}$ by adjoining the imaginary unit $i$, defined fundamentally by $i^2 = -1$. Any complex variable $z \in \mathbb{C}$ is expressed in Cartesian form as $z = x + iy$, where $x = \text{Re}(z)$ and $y = \text{Im}(z)$.
+  </p>
+
+  <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Euler's Identity & Polar Representation</h4>
+  <p style="margin-bottom: 12px;">
+    Via Taylor series expansion of $e^x$, $\cos x$, and $\sin x$, Euler's formula establishes the profound identity connecting exponential and trigonometric functions:
+  </p>
+  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+    $$e^{i\theta} = \cos\theta + i\sin\theta$$
+  </p>
+  <p style="margin-bottom: 12px;">
+    For $\theta = \pi$, this simplifies to Euler's identity, $e^{i\pi} + 1 = 0$. In polar coordinates, $z = r e^{i\theta}$ where $r = |z| = \sqrt{x^2 + y^2}$ and $\theta = \arg(z) = \arctan(y/x)$.
+  </p>
+
+  <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Holomorphic Functions & Cauchy-Riemann Conditions</h4>
+  <p style="margin-bottom: 12px;">
+    A complex function $f(z) = u(x,y) + i v(x,y)$ is complex-differentiable (holomorphic) at a point $z_0$ if and only if its real and imaginary parts satisfy the Cauchy-Riemann equations:
+  </p>
+  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+    $$\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y} \quad \text{and} \quad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}$$
+  </p>
+
+  <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Cauchy's Integral Formula & Residue Calculus</h4>
+  <p style="margin-bottom: 12px;">
+    If $f(z)$ is analytic inside and on a simple closed contour $C$, the value of $f(a)$ at any interior point $a$ is completely determined by its boundary values:
+  </p>
+  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+    $$f(a) = \frac{1}{2\pi i} \oint_C \frac{f(z)}{z - a} \, dz$$
+  </p>
+  <p>
+    When evaluating contour integrals with isolated singularities $z_k$, the Residue Theorem reduces the integral to a discrete sum:
+  </p>
+  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+    $$\oint_C f(z)\,dz = 2\pi i \sum_{k=1}^n \text{Res}(f, z_k)$$
+  </p>
+</div>
+    
     .banner {
       text-align: center;
       font-size: 2.2rem;
