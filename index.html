@@ -4,6 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BCcalculator</title>
+  
+  <!-- MathJax for rendering LaTeX equations -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      }
+    };
+  </script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -13,7 +25,7 @@
 
     html, body {
       width: 100%;
-      height: 100%;
+      min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: center;
@@ -22,8 +34,9 @@
       background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #172554, #4c1d95);
       background-size: 400% 400%;
       animation: gradientBG 15s ease infinite;
-      overflow: hidden;
+      overflow-y: auto;
       color: white;
+      padding: 40px 0;
     }
 
     @keyframes gradientBG {
@@ -38,6 +51,7 @@
       align-items: center;
       z-index: 10;
       transition: opacity 0.5s ease, transform 0.5s ease;
+      gap: 20px;
     }
 
     #calculator-container {
@@ -55,70 +69,26 @@
       gap: 18px;
     }
 
-    <!-- Academic Documentation Cover-Up Section -->
-<div id="theory-container" style="
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 25px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  width: 420px;
-  margin-top: 20px;
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.8);
-">
-  <h3 style="color: #4facfe; margin-bottom: 10px; font-size: 1.1rem; text-align: center; font-weight: 700;">
-    Complex Analysis & Transcendental Calculus
-  </h3>
+    #theory-container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 25px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      width: 420px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+    }
 
-  <p style="margin-bottom: 12px;">
-    The complex number field $\mathbb{C}$ extends the real domain $\mathbb{R}$ by adjoining the imaginary unit $i$, defined fundamentally by $i^2 = -1$. Any complex variable $z \in \mathbb{C}$ is expressed in Cartesian form as $z = x + iy$, where $x = \text{Re}(z)$ and $y = \text{Im}(z)$.
-  </p>
-
-  <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Euler's Identity & Polar Representation</h4>
-  <p style="margin-bottom: 12px;">
-    Via Taylor series expansion of $e^x$, $\cos x$, and $\sin x$, Euler's formula establishes the profound identity connecting exponential and trigonometric functions:
-  </p>
-  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
-    $$e^{i\theta} = \cos\theta + i\sin\theta$$
-  </p>
-  <p style="margin-bottom: 12px;">
-    For $\theta = \pi$, this simplifies to Euler's identity, $e^{i\pi} + 1 = 0$. In polar coordinates, $z = r e^{i\theta}$ where $r = |z| = \sqrt{x^2 + y^2}$ and $\theta = \arg(z) = \arctan(y/x)$.
-  </p>
-
-  <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Holomorphic Functions & Cauchy-Riemann Conditions</h4>
-  <p style="margin-bottom: 12px;">
-    A complex function $f(z) = u(x,y) + i v(x,y)$ is complex-differentiable (holomorphic) at a point $z_0$ if and only if its real and imaginary parts satisfy the Cauchy-Riemann equations:
-  </p>
-  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
-    $$\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y} \quad \text{and} \quad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}$$
-  </p>
-
-  <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Cauchy's Integral Formula & Residue Calculus</h4>
-  <p style="margin-bottom: 12px;">
-    If $f(z)$ is analytic inside and on a simple closed contour $C$, the value of $f(a)$ at any interior point $a$ is completely determined by its boundary values:
-  </p>
-  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
-    $$f(a) = \frac{1}{2\pi i} \oint_C \frac{f(z)}{z - a} \, dz$$
-  </p>
-  <p>
-    When evaluating contour integrals with isolated singularities $z_k$, the Residue Theorem reduces the integral to a discrete sum:
-  </p>
-  <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
-    $$\oint_C f(z)\,dz = 2\pi i \sum_{k=1}^n \text{Res}(f, z_k)$$
-  </p>
-</div>
-    
     .banner {
       text-align: center;
       font-size: 2.2rem;
       font-weight: 800;
       letter-spacing: 1px;
       margin-bottom: 5px;
-      /* Glowing gradient text */
       background: linear-gradient(to right, #00f2fe, #4facfe, #00f2fe);
       background-size: 200% auto;
       -webkit-background-clip: text;
@@ -135,7 +105,7 @@
       text-align: center;
       font-size: 0.85rem;
       color: rgba(255, 255, 255, 0.6);
-      margin-top: 15px;
+      margin-top: 5px;
       letter-spacing: 0.5px;
       font-weight: 300;
     }
@@ -242,43 +212,39 @@
     }
 
     #links-menu-container {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 35px 25px;
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
-              inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  width: min(90vw, 840px); /* Widens container to allow multiple columns */
-  max-height: 85vh;        /* Keeps container within vertical screen bounds */
-  overflow-y: auto;        /* Adds a scrollbar if vertical space is still constrained */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Automatically grids buttons into rows */
-  gap: 15px;
-}
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 35px 25px;
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      width: min(90vw, 840px);
+      max-height: 85vh;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 15px;
+    }
 
-/* Forces the title banner to take up the full row at the top */
-#links-menu-container .banner {
-  grid-column: 1 / -1;     
-}
+    #links-menu-container .banner {
+      grid-column: 1 / -1;    
+    }
 
-.link-button {
-  height: 65px;
-  font-size: 1rem;          /* Adjusted font size to fit multi-column layout */
-  text-align: center;
-  padding: 10px;
-  letter-spacing: 0.5px;
-  background: rgba(255, 255, 255, 0.08);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12px;
-}
+    .link-button {
+      height: 65px;
+      font-size: 1rem;
+      text-align: center;
+      padding: 10px;
+      letter-spacing: 0.5px;
+      background: rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 12px;
+    }
 
-.link-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
     .link-button:hover {
       background: rgba(255, 255, 255, 0.2);
     }
@@ -290,7 +256,7 @@
 
     #celebration-container {
       display: none;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
@@ -336,7 +302,7 @@
       display: none;
       width: 100%;
       height: 100vh;
-      position: absolute;
+      position: fixed;
       top: 0;
       left: 0;
       z-index: 30;
@@ -365,6 +331,8 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      color: white;
+      cursor: pointer;
     }
 
     #back-btn:hover {
@@ -422,6 +390,51 @@
         <button class="clear" onclick="deleteLast()">DEL</button>
       </div>
     </div>
+
+    <!-- Academic Documentation Cover-Up Section -->
+    <div id="theory-container">
+      <h3 style="color: #4facfe; margin-bottom: 10px; font-size: 1.1rem; text-align: center; font-weight: 700;">
+        Complex Analysis & Transcendental Calculus
+      </h3>
+
+      <p style="margin-bottom: 12px;">
+        The complex number field $\mathbb{C}$ extends the real domain $\mathbb{R}$ by adjoining the imaginary unit $i$, defined fundamentally by $i^2 = -1$. Any complex variable $z \in \mathbb{C}$ is expressed in Cartesian form as $z = x + iy$, where $x = \text{Re}(z)$ and $y = \text{Im}(z)$.
+      </p>
+
+      <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Euler's Identity & Polar Representation</h4>
+      <p style="margin-bottom: 12px;">
+        Via Taylor series expansion of $e^x$, $\cos x$, and $\sin x$, Euler's formula establishes the profound identity connecting exponential and trigonometric functions:
+      </p>
+      <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+        $$e^{i\theta} = \cos\theta + i\sin\theta$$
+      </p>
+      <p style="margin-bottom: 12px;">
+        For $\theta = \pi$, this simplifies to Euler's identity, $e^{i\pi} + 1 = 0$. In polar coordinates, $z = r e^{i\theta}$ where $r = \vert{}z\vert{} = \sqrt{x^2 + y^2}$ and $\theta = \arg(z) = \arctan(y/x)$.
+      </p>
+
+      <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Holomorphic Functions & Cauchy-Riemann Conditions</h4>
+      <p style="margin-bottom: 12px;">
+        A complex function $f(z) = u(x,y) + i v(x,y)$ is complex-differentiable (holomorphic) at a point $z_0$ if and only if its real and imaginary parts satisfy the Cauchy-Riemann equations:
+      </p>
+      <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+        $$\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y} \quad \text{and} \quad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}$$
+      </p>
+
+      <h4 style="color: #c084fc; margin: 10px 0 5px 0; font-size: 0.95rem;">Cauchy's Integral Formula & Residue Calculus</h4>
+      <p style="margin-bottom: 12px;">
+        If $f(z)$ is analytic inside and on a simple closed contour $C$, the value of $f(a)$ at any interior point $a$ is completely determined by its boundary values:
+      </p>
+      <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+        $$f(a) = \frac{1}{2\pi i} \oint_C \frac{f(z)}{z - a} \, dz$$
+      </p>
+      <p>
+        When evaluating contour integrals with isolated singularities $z_k$, the Residue Theorem reduces the integral to a discrete sum:
+      </p>
+      <p style="text-align: center; margin: 8px 0; color: #00f2fe; font-family: monospace;">
+        $$\oint_C f(z)\,dz = 2\pi i \sum_{k=1}^n \text{Res}(f, z_k)$$
+      </p>
+    </div>
+
     <div class="author-credit">Made by James Degenhardt</div>
   </div>
 
@@ -443,7 +456,7 @@
       <button class="link-button" onclick="openIframe('https://deadlydescent.net/')">Deadly Calculus</button>
       <button class="link-button" onclick="openIframe('https://rocketsoccerderby.co/')">just the Gismos</button>
       <button class="link-button" onclick="openIframe('https://poxel.io')">Dictionary</button>
-      <button class="link-button" onclick="openIframe('‬⁩https://hello1405.github.io/retrobowlcollege/')">RB College</button>
+      <button class="link-button" onclick="openIframe('https://hello1405.github.io/retrobowlcollege/')">RB College</button>
     </div>
   </div>
 
@@ -465,7 +478,6 @@
   const display = document.getElementById('display');
   const calcWrapper = document.getElementById('calculator-wrapper');
   
-  // New elements for Links Menu & Iframe
   const linksMenuWrapper = document.getElementById('links-menu-wrapper');
   const iframeContainer = document.getElementById('iframe-container');
   const secretIframe = document.getElementById('secret-iframe');
@@ -505,14 +517,12 @@
     }
   }
 
-  // Trigonometric functions set to evaluate in Degrees
   const sin = (deg) => Math.sin((deg * Math.PI) / 180);
   const cos = (deg) => Math.cos((deg * Math.PI) / 180);
   const tan = (deg) => Math.tan((deg * Math.PI) / 180);
   const sqrt = Math.sqrt;
 
   function calculate() {
-    // Check for the secret easter egg code
     if (currentInput === '617816') {
       triggerEasterEgg();
       return;
@@ -521,33 +531,26 @@
     try {
       let expr = currentInput;
 
-      // 1. Auto-close any unclosed parentheses
-      const openBrackets = (expr.match(/\(/g) || []).length;
-      const closeBrackets = (expr.match(/\)/g) || []).length;
+      const openBrackets = (expr.match(/\(/g) \vert{}\vert{} []).length;       const closeBrackets = (expr.match(/\)/g) || []).length;
       if (openBrackets > closeBrackets) {
         expr += ')'.repeat(openBrackets - closeBrackets);
       }
 
-      // 2. Insert implicit multiplication (e.g. 2sin(30) -> 2*sin(30), 5√(9) -> 5*√(9))
       expr = expr
-        .replace(/(\d|\)|π|e)(?=\(|sin|cos|tan|√|π|e)/g, '$1*')
-        .replace(/(\))((\d)+)/g, '$1*$2');
+        .replace(/(\d|\)|π|e)(?=\(\vert{}sin\vert{}cos\vert{}tan\vert{}√\vert{}π\vert{}e)/g, '$1*')         .replace(/(\))((\d)+)/g, '$1*$2');
 
-      // 3. Convert visual symbols into JS executable Math calls
       expr = expr
         .replace(/\^/g, '**')
         .replace(/√/g, 'sqrt')
         .replace(/π/g, 'Math.PI')
         .replace(/\be\b/g, 'Math.E');
 
-      // 4. Safely evaluate expression using functions defined above
       const result = Function(`"use strict"; return (${expr})`)();
 
       if (result === undefined || isNaN(result) || !isFinite(result)) {
         throw new Error("Invalid output");
       }
 
-      // Round floating point inaccuracies (e.g. sin(180) returning near 0)
       let formattedResult = Number(result.toFixed(10)).toString();
 
       display.value = formattedResult;
@@ -574,7 +577,6 @@
         
         setTimeout(() => {
           celebrationContainer.style.display = 'none';
-          // Show the Links Menu instead of directly loading the iframe
           linksMenuWrapper.style.display = 'flex';
         }, 500);
       }, 3500);
@@ -589,7 +591,7 @@
 
   function closeIframe() {
     iframeContainer.style.display = 'none';
-    secretIframe.src = ''; // Clears the iframe source to stop media from playing
+    secretIframe.src = '';
     linksMenuWrapper.style.display = 'flex';
   }
 
