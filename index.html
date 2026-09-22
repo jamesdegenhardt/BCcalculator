@@ -531,7 +531,7 @@
     try {
       let expr = currentInput;
 
-      const openBrackets = (expr.match(/\(/g) \vert{}\vert{} []).length;       const closeBrackets = (expr.match(/\)/g) || []).length;
+      const openBrackets = (expr.match(/\(/g) || []).length;       const closeBrackets = (expr.match(/\)/g) || []).length;
       if (openBrackets > closeBrackets) {
         expr += ')'.repeat(openBrackets - closeBrackets);
       }
